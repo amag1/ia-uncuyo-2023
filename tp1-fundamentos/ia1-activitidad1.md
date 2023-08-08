@@ -20,6 +20,8 @@ Más información: [1](https://www.kitmanlabs.com/).
 El término inteligencia artificial se suele entender como la capacidad de una máquina para realizar tareas que normalmente se asocian con el comportamiento humano. Un algoritmo de inteligencia artificial es capaz de aprender de la experiencia y de adaptarse a nuevas situaciones, pudiendo realizar tareas como reconocimiento de imágenes, traducción de textos, detección de fraudes, etc.
 Es importante destacar que la inteligencia artificial no se refiere a inteligencia real (término que definiremos posteriormente), sino que se trata de un conjunto de técnicas que permiten construir algoritmos que resuelven problemas complejos. Estos algoritmos pueden ser utilizados para resolver problemas que requieren de inteligencia humana, pero no necesariamente son inteligentes, por eso lo que se busca a la hora de construir estos algoritmos es que su forma de actuar se asemeje a la de un ser humano, mientras que los procesos internos suelen estar muy alejados de este enfoque (**actuar** como humano, en vez de pensar como humano).
 
+---
+
 ### 3. ¿Qué se entiende por Inteligencia?
 A la hora de hablar de inteligencia artificial, es muy importante ponernos de acuerdo anteriormente sobre qué es la inteligencia. Si buscamos el término en Internet, podemos encontrar definiciones como "la capacidad de entender o comprender", "la capacidad de resolver problemas" o "la capacidad de aprender". Sin embargo, estas definiciones son muy vagas y no permiten entender a la inteligencia como un concepto multidimensional.
 
@@ -34,6 +36,8 @@ Una vez que conseguimos elegir una definición apropiada para la inteligencia, n
 Técnicas como el coeficiente intelectual son consideradas obsoletas hoy en día debido a su visión unidimensional de la inteligencia. Actualmente, existen otras técnicas que permiten realizar la medición de una forma más completa, y la investigación en este campo sigue en desarrollo, especialmente con el objetivo de comprender el alcance de los grandes modelos de lenguaje como GPT.
 
 Para terminar, es importante destacar que la inteligencia artificial abarca la capacidad de las máquinas de realizar tareas complejas, aunque no necesariamente imita completamente el comportamiento humano. A pesar de que existen tipos específicos de inteligencia como la emocional, se puede ver a la inteligencia como la capacidad para adquirir conocimientos y adaptarse, y se puede aplicar al diseño de sistemas de IA que ejecuten tareas específicas, mejorando la automatización y eficiencia en diversas áreas tecnológicas.
+
+---
 
 ### 4. ¿Qué se entiende por artificial?
 El término artificial se refiere a algo que ha sido creado por el ser humano, en contraposición a algo natural. En el ámbito de la inteligencia artificial, el término artificial se refiere a la creación de algoritmos que permiten a las máquinas realizar tareas que normalmente se asocian con el comportamiento humano, y hace énfasis en la naturaleza humana de esta inteligencia, demostrando que no ocurre en organismos biológicos.
