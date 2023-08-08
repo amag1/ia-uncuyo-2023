@@ -1,7 +1,7 @@
 # IA I (2023) - Actividad 1
 ## Andrés Maglione
 
----
+
 ### 1. Buscar 2 ejemplos de aplicaciones de inteligencia artificial.
 #### - Ejemplo 1: Grammarly
 Grammarly es un asistente para escritura que utiliza inteligencia artificial para corregir errores ortográficos, gramaticales y de estilo. Esta herramienta permite a los usuarios detectar errores en la escritura, aunque sus funciones más importantes son las sugerencias a la hora de elegir la estructura del texto, las palabras específicas que usamos y el sentimiento del texto.
