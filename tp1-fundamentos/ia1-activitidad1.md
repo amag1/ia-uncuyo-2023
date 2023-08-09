@@ -39,7 +39,7 @@ Para terminar, es importante destacar que la inteligencia artificial abarca la c
 
 ---
 
-### 4. ¿Qué se entiende por artificial?
+### 4. ¿Qué se entiende por Artificial?
 El término artificial se refiere a algo que ha sido creado por el ser humano, en contraposición a algo natural. En el ámbito de la inteligencia artificial, el término artificial se refiere a la creación de algoritmos que permiten a las máquinas realizar tareas que normalmente se asocian con el comportamiento humano, y hace énfasis en la naturaleza humana de esta inteligencia, demostrando que no ocurre en organismos biológicos.
 
 El objetivo de la IA es crear sistemas que procesen información y realicen tareas de forma similar o superior a la inteligencia humana. Si bien la inteligencia artificial no posee conciencia, emociones o autoconciencia como la inteligencia humana, juega un papel crucial en la automatización de tareas, la mejora de las capacidades humanas y el avance de la tecnología en numerosas industrias.
