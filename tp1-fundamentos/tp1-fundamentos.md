@@ -4,7 +4,7 @@
 
 ### Ejercicio 1
 
-### Resumen del capítulo 26 de AIMA
+### a) Resumen del capítulo 26 de AIMA
 
 Con la explosión de la inteligencia artificial, se reflota un fascinante debate sobre la naturaleza de la mente humana. En esta cruzada, participan tanto filósofos como científicos, y se intenta responder a la pregunta de si la mente humana es una máquina de procesamiento de información o si, por el contrario, es algo más complejo que no puede ser explicado por la ciencia.
 
@@ -69,15 +69,12 @@ Dentro de los temas más importantes que se suelen considerar encontramos los si
 
 ---
 
-### Ejercicio 2
-
-### Mapa mental
+### b) Mapa mental
 ![Mapa mental](./mindmap.png)
 
 ---
 
-### Ejercicio 3
-#### Opinión personal
+### c) Opinión personal
 
 Para mí, el desarrollo de la IA es un hecho sumamente interesante más allá de sus implicaciones técnicas. El debate filosófico que conlleva este desarrollo nos impulsará a seguir investigando sobre cómo funciona la mente humana para poder establecer diferencias y semejanzas con la inteligencia artificial.
 
@@ -86,3 +83,13 @@ Personalmente, un tema que encuentro sumamente emocionante es el de la creativid
 Por otro lado, el desarrollo de la IA es un hecho que no puede ser detenido. La IA ya está presente en nuestras vidas, y seguirá creciendo. Por lo tanto, es importante que la sociedad se prepare para los cambios que se avecinan, y que se tomen las medidas necesarias para que el desarrollo de la IA sea lo más beneficioso posible para la humanidad.
 
 Desde nuestro lugar como científicos de la computación, es importante que nos mantengamos informados sobre los avances en el campo de la IA, y que nos involucremos en el debate sobre las implicaciones éticas de la misma. Es nuestra responsabilidad como profesionales asegurarnos de que la IA se desarrolle de la mejor manera posible.
+
+---
+
+### Ejercicio 2 
+
+El artículo "You Are Not a Parrot" plantea una serie de críticas muy válidas a la IA y a las principales figuras que la impulsan.
+
+Personalmente, considero que la IA generativa tiene una utilidad para la sociedad, siempre y cuando entendamos sus limitaciones y no le demos más entidad de la que se merece. Emily Bender pone en palabras una idea que me parece muy importante: "Se pone demasiado empeño en crear máquinas autónomas en lugar de máquinas que sean útiles para los humanos". Si vemos a la IA generativa como una mera herramienta para poder mejorar nuestra productividad, yo creo que habrá cumplido su propósito.
+
+
