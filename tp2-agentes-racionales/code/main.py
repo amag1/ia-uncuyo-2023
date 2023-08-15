@@ -26,11 +26,13 @@ if __name__ == "__main__":
             for k in range(iters):
                 env = Environment(size, size, dirt_rates[i])
                 agent = ReflexiveAgent(
-                    random.randint(0, size - 1), random.randint(0, size - 1), env
+                    random.randint(
+                        0, size - 1), random.randint(0, size - 1), env
                 )
                 points += agent.points
                 moves += 1000 - agent.remaining_moves
-                clean_rate += 1 - (env.dirty_squares / env.initial_dirty_squares)
+                clean_rate += 1 - (env.dirty_squares /
+                                   env.initial_dirty_squares)
 
             performance[i][j] = [
                 points / iters,
@@ -62,7 +64,7 @@ if __name__ == "__main__":
     for i in range(len(dirt_rates)):
         y = [line[2] for line in performance[i]]
         ax1.bar(
-            X_axis + width * i,
+            X_axis - 1.5 * width + width * i,
             y,
             color=colors[i],
             width=width,
@@ -77,6 +79,9 @@ if __name__ == "__main__":
     )
     ax1.legend()
 
+    # Save figure to file
+    fig1.savefig("clean_rate.png")
+
     # Plot 2
     fig2 = plt.figure(figsize=(10, 10))
     ax2 = fig2.add_subplot()
@@ -84,7 +89,7 @@ if __name__ == "__main__":
     for i in range(len(dirt_rates)):
         y = [line[3] for line in performance[i]]
         ax2.bar(
-            X_axis + width * i,
+            X_axis - 1.5 * width + width * i,
             y,
             color=colors[i],
             width=width,
@@ -99,26 +104,58 @@ if __name__ == "__main__":
     )
     ax2.legend()
 
-    # Plot 3
-    fig3 = plt.figure(figsize=(10, 10))
-    ax3 = fig3.add_subplot()
+    # Save figure to file
+    fig2.savefig("moves_per_point.png")
+
+    # # Plot 3
+    # # Requiere cambiar el eje y a escala logaritmica y desactivar el limite de movimientos
+    # fig3 = plt.figure(figsize=(10, 10))
+    # ax3 = fig3.add_subplot()
+
+    # for i in range(len(dirt_rates)):
+    #     y = [line[1] for line in performance[i]]
+    #     ax3.bar(
+    #         X_axis - 1.5 * width + width * i,
+    #         y,
+    #         color=colors[i],
+    #         width=width,
+    #         label=f"dirt_rate={dirt_rates[i]}",
+    #     )
+
+    # ax3.set_xlabel("Environment size")
+    # ax3.set_xticks(X_axis, x)
+    # ax3.set_ylabel("Moves")
+    # ax3.set_yscale("log")
+    # ax3.set_title(
+    #     "Moves to clear 100% vs environment size\n(logarithmic scale for y-axis)"
+    # )
+    # ax3.legend()
+
+    # fig3.savefig("moves.png")
+
+    # Plot 4 - avg points
+    fig4 = plt.figure(figsize=(10, 10))
+    ax4 = fig4.add_subplot()
 
     for i in range(len(dirt_rates)):
-        y = [line[1] for line in performance[i]]
-        ax3.bar(
-            X_axis + width * i,
+        y = [line[0] for line in performance[i]]
+        ax4.bar(
+            X_axis - 1.5 * width + width * i,
             y,
             color=colors[i],
             width=width,
             label=f"dirt_rate={dirt_rates[i]}",
         )
 
-    ax3.set_xlabel("Environment size")
-    ax3.set_xticks(X_axis, x)
-    ax3.set_ylabel("Moves")
-    ax3.set_title(
-        "Moves vs environment size\n(100 iterations with a max of 1000 moves)"
+    ax4.set_xlabel("Environment size")
+    ax4.set_xticks(X_axis, x)
+    ax4.set_ylabel("Points")
+    ax4.set_yscale("log")
+    ax4.set_title(
+        "Points vs environment size\n(100 iterations with a max of 1000 moves, logarithmic scale)"
     )
-    ax3.legend()
+    ax4.legend()
 
+    # Save figure to file
+    fig4.savefig("points.png")
     plt.show()
