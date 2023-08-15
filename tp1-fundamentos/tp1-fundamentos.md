@@ -2,11 +2,9 @@
 
 ## Andrés Maglione
 
----
+### Ejercicio 1
 
-#### Ejercicio 1
-
-### Resumen del capítulo 26 de AIMA
+### a) Resumen del capítulo 26 de AIMA
 
 Con la explosión de la inteligencia artificial, se reflota un fascinante debate sobre la naturaleza de la mente humana. En esta cruzada, participan tanto filósofos como científicos, y se intenta responder a la pregunta de si la mente humana es una máquina de procesamiento de información o si, por el contrario, es algo más complejo que no puede ser explicado por la ciencia.
 
@@ -68,3 +66,30 @@ Dentro de los temas más importantes que se suelen considerar encontramos los si
 2. **La IA puede usarse para fines no deseados:** En palabras de G.H Hardy: "se dice que una ciencia es útil si su desarrollo tiende a acentuar las desigualdades en la distribución de bienes, o, más directamente, promueve la destrucción de la vida humana". La IA puede ser aplicada para todo tipo de fines no deseados, como la vigilancia masiva, la manipulación de la opinión pública, la creación de armas autónomas, etc.
 3. **El éxito de la IA significa el fin de la raza humana:** Cualquier nueva tecnología puede amenazar la existencia si cae en las manos equivocadas, pero la diferencia con la IA es que se hace referencia a la propia tecnología que puede destruirnos.
    Desde hace siglos, la ciencia ficción ha explorado la idea de que las máquinas se vuelvan más inteligentes que los humanos y se revelen contra ellos. Algunos filósofos llaman a dicho momento "la era de la singularidad"
+
+---
+
+### b) Mapa mental
+![Mapa mental](./mindmap.png)
+
+---
+
+### c) Opinión personal
+
+Para mí, el desarrollo de la IA es un hecho sumamente interesante más allá de sus implicaciones técnicas. El debate filosófico que conlleva este desarrollo nos impulsará a seguir investigando sobre cómo funciona la mente humana para poder establecer diferencias y semejanzas con la inteligencia artificial.
+
+Personalmente, un tema que encuentro sumamente emocionante es el de la creatividad. A pesar de que el argumento en contra de la capacidad de la IA de crear cosas nuevas se basa en que solo copia lo que ya existe, creo que la creatividad humana se basa en el mismo concepto. Cualquier invención novedosa que se nos pueda ocurrir está sumamente influenciada por nuestro entorno, y es una combinación de ideas que ya existían. 
+
+Por otro lado, el desarrollo de la IA es un hecho que no puede ser detenido. La IA ya está presente en nuestras vidas, y seguirá creciendo. Por lo tanto, es importante que la sociedad se prepare para los cambios que se avecinan, y que se tomen las medidas necesarias para que el desarrollo de la IA sea lo más beneficioso posible para la humanidad.
+
+Desde nuestro lugar como científicos de la computación, es importante que nos mantengamos informados sobre los avances en el campo de la IA, y que nos involucremos en el debate sobre las implicaciones éticas de la misma. Es nuestra responsabilidad como profesionales asegurarnos de que la IA se desarrolle de la mejor manera posible.
+
+---
+
+### Ejercicio 2 
+
+El artículo "You Are Not a Parrot" plantea una serie de críticas muy válidas a la IA y a las principales figuras que la impulsan.
+
+Personalmente, considero que la IA generativa tiene una utilidad para la sociedad, siempre y cuando entendamos sus limitaciones y no le demos más entidad de la que se merece. Emily Bender pone en palabras una idea que me parece muy importante: "Se pone demasiado empeño en crear máquinas autónomas en lugar de máquinas que sean útiles para los humanos". Si vemos a la IA generativa como una mera herramienta para poder mejorar nuestra productividad, yo creo que habrá cumplido su propósito.
+
+
