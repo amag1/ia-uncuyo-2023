@@ -1,34 +1,64 @@
 from runner import Runner
 from environment import Environment
 import agents as a
+from resultoptions import *
 import time
-import statistics
 
 SIZE = 100
-ITERS = 30
-OBSTACLE_RATE = 0.2
+ITERS = 100
+OBSTACLE_RATE = 0.08
 
 
-def run_bfs():
-    env = Environment(OBSTACLE_RATE, SIZE)
+def run_bfs(env):
     agent = a.BFSAgent(env)
-    return agent.getPath()
+    return agent.findPath()
+
+def run_dfs(env):
+    agent = a.DFSAgent(env)
+    return agent.findPath()
+
+def run_dfs_limited(env):
+    agent = a.DFSLimitedAgent(env, 2000)
+    return agent.findPath()
+
+def run_uniform(env):
+    agent = a.UniformAgent(env)
+    return agent.findPath()
+
+def get_results():
+    env_list = [Environment(OBSTACLE_RATE, SIZE) for _ in range(ITERS)]
+    r = []
+    
+    print("Running BFS")
+    runner = Runner(ITERS, run_bfs, env_list)
+    r.append(runner.run())
+
+    print("Running DFS")
+    runner = Runner(ITERS, run_dfs, env_list)
+    r.append(runner.run())
+
+    print("Running DFS Limited")
+    runner = Runner(ITERS, run_dfs_limited, env_list)
+    r.append(runner.run())
+
+    print("Running Uniform cost")
+    runner = Runner(ITERS, run_uniform, env_list)
+    r.append(runner.run())
+
+    print("Done!")
+
+    return r
+
 
 
 if __name__ == "__main__":
     t = time.time()
-    runner = Runner(ITERS, run_bfs)
-    results = runner.run()
 
-    print(f'Running time: {time.time() - t} seconds')
+    results = get_results()
+    csv_write(results)
 
-    null_results = 0
-    for result in results:
-        if result is None:
-            null_results += 1
+    print(f"Time elapsed: {time.time() - t}")
 
-    print(f'Null results: {null_results}/{ITERS}')
-
-    steps = [result[2] for result in results if result is not None]
-    print(f'Mean steps: {statistics.mean(steps)}')
-    print(f'Std steps: {statistics.stdev(steps)}')
+    
+    box_args = [(res[0][0], [r[2] for r in res]) for res in results]
+    boxplot(box_args)

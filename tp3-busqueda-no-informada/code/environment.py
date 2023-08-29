@@ -50,3 +50,15 @@ class Environment:
         if y < self.size-1 and self.matrix[x][y+1] != 1.0:
             surrounding_squares.append((x, y+1))
         return surrounding_squares
+
+    def plot(self):
+        import matplotlib.pyplot as plt
+        from matplotlib import colors
+
+        fig, ax = plt.subplots()
+
+        cm = colors.ListedColormap(['white', 'grey', 'green'])
+        ax.matshow(self.matrix, cmap=cm)
+        
+
+        plt.show()
