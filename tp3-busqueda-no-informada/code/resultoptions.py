@@ -21,8 +21,11 @@ def boxplot(results):
     plt.show()
 
 
+def prune_results(item):
+    return [item[0],item[5], item[2], item[4]]
+
 def csv_write(results):
-    headers = ["Agent", "Path", "Steps", "Path Depth"]
+    headers = ["Agent", "env_n", "explored_states", "success"]
     with open("./results/results.csv", "w") as f:
         writer = csv.writer(f)
         writer.writerow(headers)
@@ -30,5 +33,5 @@ def csv_write(results):
 
     with open("./results/results.csv", "a") as f:
         writer = csv.writer(f)
-        writer.writerows([item for sublist in results for item in sublist])
+        writer.writerows([prune_results(item) for sublist in results for item in sublist])
         f.close()

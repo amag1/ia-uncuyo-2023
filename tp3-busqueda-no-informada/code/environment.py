@@ -2,10 +2,11 @@ import numpy as np
 
 
 class Environment:
-    def __init__(self, obstacle_rate, size):
+    def __init__(self, obstacle_rate, size, id):
         self.matrix = np.zeros((size, size))
         self.size = size
         self.obstacle_rate = obstacle_rate
+        self.id = id
         self.generate_obstacles()
         self.set_goal()
 

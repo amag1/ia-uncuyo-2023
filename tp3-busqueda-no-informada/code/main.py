@@ -5,8 +5,8 @@ from resultoptions import *
 import time
 
 SIZE = 100
-ITERS = 100
-OBSTACLE_RATE = 0.08
+ITERS = 30
+OBSTACLE_RATE = 0.1
 
 
 def run_bfs(env):
@@ -30,7 +30,7 @@ def run_uniform(env):
 
 
 def get_results():
-    env_list = [Environment(OBSTACLE_RATE, SIZE) for _ in range(ITERS)]
+    env_list = [Environment(OBSTACLE_RATE, SIZE,i) for i in range(ITERS)]
     r = []
 
     print("Running BFS")
@@ -61,6 +61,5 @@ if __name__ == "__main__":
     csv_write(results)
 
     print(f"Time elapsed: {time.time() - t}")
-
     box_args = [(res[0][0], [r[2] for r in res]) for res in results]
     boxplot(box_args)

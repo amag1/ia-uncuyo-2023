@@ -90,7 +90,7 @@ class Agent(ABC):
 
     def getSolution(self, node, plot=False):
         if node is None:
-            return (self.__class__.__name__, [], self.steps, float("inf"))
+            return (self.__class__.__name__, [], self.steps, float("inf"), self.success, self.env.id)
         path = []
         depth = node.depth
         while node.parent != None:
@@ -99,7 +99,7 @@ class Agent(ABC):
         path.reverse()
         if plot:
             self.plotSolution(path)
-        return (self.__class__.__name__, path, self.steps, depth)
+        return (self.__class__.__name__, path, self.steps, depth, self.success, self.env.id)
 
     def handleExplored(self, node):
         pass
