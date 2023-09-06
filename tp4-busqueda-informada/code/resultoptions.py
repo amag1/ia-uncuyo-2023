@@ -8,7 +8,7 @@ def boxplot(results):
 
     fig, ax = plt.subplots()
     bplot = ax.boxplot(data, vert=True, labels=labels, patch_artist=True)
-    ax.set_title('Comparación de algoritmos de búsqueda no informada')
+    ax.set_title('Comparación de algoritmos de búsqueda')
     ax.set_ylabel('Cantidad de pasos')
     ax.set_xlabel('Algoritmo')
     ax.yaxis.grid(True)
