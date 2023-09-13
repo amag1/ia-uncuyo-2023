@@ -14,7 +14,7 @@ def process_object(object):
     return object.run()
 
 
-def test(function, params, iters):
+def test(function, params, iters,q):
     print("Testing: " + function.__name__)
     
     r = []
@@ -31,16 +31,20 @@ def test(function, params, iters):
     # Write results to csv
     with open("./results/results.csv", "a") as f:
         writer = csv.writer(f)
-        writer.writerows([[function.__name__, s[0].fitness, s[1], s[2], s[0].fitness == 0] for s in r])
+        writer.writerows([[function.__name__, q,s[0].fitness, s[1], s[2], s[0].fitness == 0] for s in r])
     return heuristic, time, solved
 
-def testGenetic(envs, iters):
+def testGenetic(envs, iters,q):
     print(f"Testing genetic algorithm ({len(envs)} iterations with a population of {len(envs[0])} and a max of {iters} generations)")
 
     r = []
     for e in envs:
-        g = Genetic(e, iters, target=0)
-        r.append(g.run())
+        r.append(Genetic(e, iters, target=0))
+    
+    pool = multiprocessing.Pool()
+    r = pool.map(process_object, r)
+    pool.close()
+    pool.join()
     
     heuristic = [s[0].fitness for s in r]
     time = [s[2] for s in r]
@@ -53,7 +57,7 @@ def testGenetic(envs, iters):
     # Write results to csv
     with open("./results/results.csv", "a") as f:
         writer = csv.writer(f)
-        writer.writerows([["Genetic", s[0].fitness, s[1], s[2], s[0].fitness == 0] for s in r])
+        writer.writerows([["Genetic",q, s[0].fitness, s[1], s[2], s[0].fitness == 0] for s in r])
     return heuristic, time, solved
 
 

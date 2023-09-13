@@ -36,7 +36,7 @@ def multiplot(results, queens=8):
     
     plt.tight_layout()
     #save figure
-    plt.savefig('./plots/multiplot.png')
+    plt.savefig(f'./plots/multiplot_{queens}.png')
 
 
 

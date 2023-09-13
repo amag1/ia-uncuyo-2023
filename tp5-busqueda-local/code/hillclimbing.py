@@ -39,6 +39,7 @@ def hill_climbing(solution, ITERS, sideways = False, plot = False):
 
     if plot:
         plt.plot(fitness)
+        plt.title(f"Hill Climbing - Fitness over {i} iterations")
         plt.savefig("./plots/hill_climbing.png")
 
     return currentSolution, i, t

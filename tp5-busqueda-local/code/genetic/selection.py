@@ -7,7 +7,7 @@ sys.path.append("..")
 import utils
 
 class Selection:
-    def __init__(self, type = "tournament", k = 4):
+    def __init__(self, type = "proportional", k = 8):
         self.type = type
         self.k = k
     

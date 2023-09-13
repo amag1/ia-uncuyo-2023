@@ -7,7 +7,7 @@ sys.path.append("..")
 import utils
 
 class Mutation:
-    def __init__(self, type = "swap"):
+    def __init__(self, type = "random"):
         self.type = type
     
     def __call__(self, solution):

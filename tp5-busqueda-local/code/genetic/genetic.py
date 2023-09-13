@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 import sys
 sys.path.append("..")
 
@@ -25,6 +26,7 @@ class Genetic:
     def run(self):
         t = time.time()
         currentBest = self.population[0]
+        fitness = [currentBest.fitness]
         i = 0
         while currentBest.fitness != self.target and i < self.generations:
             # Seleccionar padres usando la funcion de seleccion
@@ -41,9 +43,15 @@ class Genetic:
             self.population = self.replace(self.population, children)
             # Obtener el mejor
             currentBest = self.population[0]
-
+            fitness.append(currentBest.fitness)
             # Incrementar contador
             i += 1
+
+        if self.plot:
+            plt.plot(fitness)
+            plt.title(f"Genetic Algorithm - Fitness over {i} generations")
+            plt.savefig(f"./plots/genetic_{len(self.population[0].value)}queens_{self.generations}gens.png")
+
         return currentBest, i, time.time() - t
     
     
