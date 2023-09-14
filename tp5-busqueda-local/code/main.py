@@ -50,11 +50,15 @@ if __name__ == "__main__":
 
     ITERS = 200
     QUEENS = [4, 8, 10, 12, 15]
+    # ro.plot_queens(s)
 
+    # s = generate_random_solution(15)
+    # ro.plot_queens(s)
+    # csv_fullplot(QUEENS, ITERS)
     # plot_genetic_performance(15, ITERS, 50)
 
-    s = generate_random_solution(15)
+    # s = generate_random_solution(15)
     # plot_hillclimbing_performance(s, ITERS)
-    plot_annealing_performance(s, ITERS)
+    # plot_annealing_performance(s, ITERS)
 
     

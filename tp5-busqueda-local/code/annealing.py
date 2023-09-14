@@ -39,7 +39,7 @@ def simmulated_annealing(solution, ITERS, plot=False):
 
     if plot:
         plt.plot(fitness)
-        plt.title(f"Simmulated Annealing - Fitness over {i} iterations")
+        plt.title(f"Simmulated Annealing - H over {i} iterations")
         plt.savefig("./plots/simmulated_annealing.png")
         
 
