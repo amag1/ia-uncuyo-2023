@@ -16,7 +16,7 @@ def csv_fullplot(QUEENS, ITERS):
         writer.writerows([["Algorithm", "Queens", "Best result", "Iterations", "Time", "Solved"]])
     for q in QUEENS:
         print("\nQueens: " + str(q))
-        envs = [generate_random_solution(q) for i in range(50)]
+        envs = [generate_random_solution(q) for i in range(200)]
         # Testear hill climbing
         h1, t1, s1 = test(hill_climbing, envs, ITERS,q)
 
@@ -27,7 +27,7 @@ def csv_fullplot(QUEENS, ITERS):
 
         print("----------------")
 
-        envs = [envs for _ in range(50)]
+        envs = [[generate_random_solution(q) for i in range(50)] for _ in range(200)]
         # Testear algoritmo genetico
         h3, t3, s3 = testGenetic(envs, ITERS, q)
 
@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
     # s = generate_random_solution(15)
     # ro.plot_queens(s)
-    # csv_fullplot(QUEENS, ITERS)
+    csv_fullplot(QUEENS, ITERS)
     # plot_genetic_performance(15, ITERS, 50)
 
     # s = generate_random_solution(15)
