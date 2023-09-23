@@ -181,14 +181,17 @@ Cuando el grafo de restricciones forma un arbol, podemos *aplanar* dicho arbol a
 
 <details>
   <summary>
-    <b>AC-3 coloca de nuevo en la cola todo arco ( Xk, Xi) cuando cualquier valor es removido del dominio de Xi incluso si cada valor de Xk es consistente con los valores restantes de Xi. Supongamos que por  cada arco ( Xk,Xi)  se puede llevar la cuenta del número de valores restantes de Xi que sean consistentes con cada valor de Xk . Explicar como actualizar ese número de manera eficiente y demostrar que la arco consistencia puede lograrse en un tiempo total O(n2d2 ) </b>
-  <summary>
+    <b>
+    AC-3 coloca de nuevo en la cola todo arco ( Xk, Xi) cuando cualquier valor es removido del dominio de Xi incluso si cada valor de Xk es consistente con los valores restantes de Xi. Supongamos que por  cada arco ( Xk,Xi)  se puede llevar la cuenta del número de valores restantes de Xi que sean consistentes con cada valor de Xk . Explicar como actualizar ese número de manera eficiente y demostrar que la arco consistencia puede lograrse en un tiempo total O(n2d2 ) 
+    </b>
+  </summary>
 
   Si dicho supuesto fuera posible, podríamos mantener una matrix de $n \times d$ donde cada fila representa una variable y cada columna representa un valor en el dominio de dicha variable. De este modo, podríamos mantener un contador de la cantidad de valores consistentes para cada valor en el dominio de cada variable.
 
   Ahora, cuando se remueve un valor $v$ del dominio de una variable $X_i$, podemos decrementar el contador de la fila $X_i$ y la columna $v$ en 1. De este modo, podemos saber cuantos valores consistentes quedan para cada valor en el dominio de cada variable.
 
   Esto disminuye la complejidad del algoritmo, volviendolo $O(n^2 \cdot d^2)$.
+  
 </details>
 
 <br>
@@ -223,13 +226,15 @@ De este modo, podemos asegurar la $n$-consistencia ya que, para cualquier par de
 
 <details>
   <summary>
-Implementar una solución al problema de las n-reinas utilizando una formulación CSP
+  <b>
+  Implementar una solución al problema de las n-reinas utilizando una formulación CSP
+  </b>
 
-- Implementar una solución utilizando backtracking 
-- Implementar una solución utilizando encadenamiento hacia adelante. 
-- En cada variante, calcular los tiempos de ejecución para los casos de 4, 8, 10, 12 y 15 reinas.
-- En cada variante, calcular la cantidad de estados recorridos antes de llegar a la solución para los casos de 4, 8, 10, 12 y 15 reinas.
-- Realizar un gráfico de cajas para los puntos c y d.
+  - Implementar una solución utilizando backtracking 
+  - Implementar una solución utilizando encadenamiento hacia adelante. 
+  - En cada variante, calcular los tiempos de ejecución para los casos de 4, 8, 10, 12 y 15 reinas.
+  - En cada variante, calcular la cantidad de estados recorridos antes de llegar a la solución para los casos de 4, 8, 10, 12 y 15 reinas.
+  - Realizar un gráfico de cajas para los puntos c y d.
 
   </summary>
 
