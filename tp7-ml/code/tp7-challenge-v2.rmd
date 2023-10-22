@@ -1,0 +1,131 @@
+---
+title: "tp7-challenge_v2"
+author: "andres"
+output: html_notebook
+---
+Importar librerias
+```{r}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(caret)
+library(rpart)
+library(ranger)
+
+confusion_matrix_imp <- function(data, reference) {
+    unique_classes <- unique(c(data, reference))
+    cm <- matrix(0, nrow = length(unique_classes), ncol = length(unique_classes))
+    colnames(cm) <- unique_classes
+    rownames(cm) <- unique_classes
+    
+    for (i in 1:length(data)){
+      actual_class <- reference[i]
+      predicted_class <- data[i]
+      cm[predicted_class, actual_class] = cm[ predicted_class, actual_class] + 1
+    }
+    
+    colnames(cm) <- paste("Actual:", colnames(cm))
+    rownames(cm) <- paste("Predicted:", rownames(cm))
+    
+    return(cm)
+}
+
+get_metrics <- function(confusion_matrix) {
+  accuracy <- (confusion_matrix[1,1] + confusion_matrix[2,2])/sum(confusion_matrix)
+  sensitivity <- confusion_matrix[1,1] / (confusion_matrix[1,1] + confusion_matrix[1,2])
+  specificity <- confusion_matrix[2,2] / (confusion_matrix[2,1] + confusion_matrix[2,2])
+  precision <- confusion_matrix[1,1] / (confusion_matrix[1,1] + confusion_matrix[2,1])
+  
+  print(sensitivity)
+  
+  metrics <- data.frame(
+    Accuracy = accuracy,
+    Precision = precision,
+    Sensitivity = sensitivity,
+    Specificity = specificity
+  )
+  
+  return(metrics)
+  
+}
+```
+Funcion para crear un envio
+```{r}
+create_submission <- function(prediction, test, fileName){
+  
+  result <- data.frame(
+    id = numeric(),
+    inclinacion_peligrosa = numeric()
+  )
+  
+  
+  for (i in 1:length(prediction)){
+    row <- data.frame(id = test[i,]$id, inclinacion_peligrosa = as.integer(prediction[i])-1)
+    result <- rbind(result,row)
+  }
+  
+  r <- readr::write_csv(result, fileName)
+}
+```
+Importar los datasets entrenamiento
+```{r}
+data <- readr::read_csv("../data/arbolado-mza-dataset.csv")
+test <- readr::read_csv("../data/arbolado-mza-dataset-test.csv")
+train <- readr::read_csv("../data/arbolado-mza-dataset-train.csv")
+validation <- readr::read_csv("../data/arbolado-mza-dataset-validation.csv")
+```
+Ejemplo Ranger
+```{r}
+ranger_formula <- formula(inclinacion_peligrosa~.)
+model <- ranger(formula = ranger_formula, data = train, classification = TRUE)
+model
+
+p <- predict(model, test)
+p$predictions <- as.factor(p$predictions)
+
+validation$inclinacion_peligrosa <- as.factor(validation$inclinacion_peligrosa)
+cm <- confusionMatrix(data = p$predictions, reference = validation$inclinacion_peligrosa)
+cm
+```
+Segundo ejemplo de ranger con undersampling de la clase mayoritaria
+```{r}
+data_shuffled <- train[sample(1:nrow(data)),]
+dangerous <- data_shuffled %>% dplyr::filter(., inclinacion_peligrosa == 1)
+total_dangerous <- dangerous %>% dplyr::count() 
+
+normal <- data_shuffled %>% dplyr::filter(., inclinacion_peligrosa == 0) %>% dplyr::slice(., 1:total_dangerous$n)
+filtered_data <- rbind(dangerous,normal)
+
+undersampled_model <- ranger(formula = ranger_formula, data = filtered_data, classification = TRUE)
+undersampled_model
+
+p <- predict(undersampled_model, test)
+p$predictions <- as.factor(p$predictions)
+
+validation$inclinacion_peligrosa <- as.factor(validation$inclinacion_peligrosa)
+cm <- confusionMatrix(data = p$predictions, reference = validation$inclinacion_peligrosa)
+```
+Seleccionamos algunas variables
+```{r}
+# trainFormula <- formula(inclinacion_peligrosa ~ especie + seccion + altura + diametro_tronco)
+filtered_model <- ranger(formula = ranger_formula, data = filtered_data, classification = TRUE, importance = 'impurity')
+importance <- importance(filtered_model)
+importance
+p <- predict(undersampled_model, test)
+p$predictions
+```
+
+Undersampling probando caret
+```{r}
+formula <- ranger_formula
+
+control <- trainControl(method = 'repeatedcv',
+                        number = 10,
+                        repeats = 3,
+                        search = 'random')
+
+
+rf <- train(formula, data = train, method = 'rf', metric = 'twoClassSummary', tuneLength = 15, trControl = control)
+
+rf
+```
