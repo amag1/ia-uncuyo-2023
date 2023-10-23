@@ -110,10 +110,80 @@ Seleccionamos algunas variables
 # trainFormula <- formula(inclinacion_peligrosa ~ especie + seccion + altura + diametro_tronco)
 filtered_model <- ranger(formula = ranger_formula, data = filtered_data, classification = TRUE, importance = 'impurity')
 importance <- importance(filtered_model)
-importance
 p <- predict(undersampled_model, test)
 p$predictions
 ```
+Hacemos la variable circ_tronco_cm categorica
+```{r}
+categorize_circ <- function(value){
+  if (value < 80){
+    return("bajo")
+  }
+  else if (value < 190){
+    return("medio")
+  }
+  else if (value < 250){
+    return("alto")
+  }
+  else {
+    return("muy alto")
+  }
+}
+
+data_cat <- filtered_data %>% dplyr::mutate(circ_tronco_cm_cat = sapply(circ_tronco_cm, categorize_circ))
+formula <- formula(inclinacion_peligrosa ~ circ_tronco_cm_cat + lat + especie + altura)
+
+model <- ranger(formula = formula, data = data_cat, num.trees = 1500,classification = TRUE, importance = 'impurity')
+importance <- importance(model)
+importance
+
+test2 <- test %>% dplyr::mutate(circ_tronco_cm_cat = sapply(circ_tronco_cm, categorize_circ))
+p <- predict(model, test2)
+
+```
+Otra prueba agregando crossvalidation
+```{r}
+ctrl <- trainControl(method = "cv", number = 10)
+data_cat <- filtered_data %>% dplyr::mutate(circ_tronco_cm_cat = sapply(circ_tronco_cm, categorize_circ))
+formula <- formula(inclinacion_peligrosa ~ circ_tronco_cm_cat + lat + seccion + diametro_tronco  + altura)
+
+data_cat$inclinacion_peligrosa <- as.factor(data_cat$inclinacion_peligrosa)
+cmodel <- train(
+  formula,
+  data = data_cat,
+  trControl = ctrl,
+  method = "ranger"
+)
+
+test2 <- test %>% dplyr::mutate(circ_tronco_cm_cat = sapply(circ_tronco_cm, categorize_circ))
+p <- predict(cmodel, test2)
+
+r <- create_submission(p, test, "09_cv_k10")
+```
+```{r}
+library(xgboost)
+
+fdata <- data_cat %>% select(., inclinacion_peligrosa, especie, altura, seccion, id, diametro_tronco, circ_tronco_cm_cat)
+fdata$especie <- as.numeric(as.factor(fdata$especie))
+fdata$altura <- as.numeric(as.factor(fdata$altura))
+fdata$circ_tronco_cm_cat <- as.numeric(as.factor(fdata$circ_tronco_cm_cat))
+fdata$diametro_tronco <- as.numeric(as.factor(fdata$diametro_tronco))
+fdata
+x <- fdata[, -which(colnames(fdata) == "inclinacion_peligrosa")]
+y <- fdata$inclinacion_peligrosa
+
+xgb_model <- xgboost(data = as.matrix(x), label = y, nrounds = 100, objective = "binary:logistic")
+
+xtrain <- train[, -which(colnames(train) == "inclinacion_peligrosa")]
+xtrain$circ_tronco_cm_cat <- sapply(train$circ_tronco_cm, categorize_circ)
+xtrain$especie <- as.numeric(as.factor(xtrain$especie))
+xtrain$altura <- as.numeric(as.factor(xtrain$altura))
+xtrain$circ_tronco_cm_cat <- as.numeric(as.factor(xtrain$circ_tronco_cm_cat))
+xtrain$diametro_tronco <- as.numeric(as.factor(xtrain$diametro_tronco))
+
+p <- predict(xgb_model, as.matrix(xtrain))
+```
+
 
 Undersampling probando caret
 ```{r}
@@ -125,7 +195,7 @@ control <- trainControl(method = 'repeatedcv',
                         search = 'random')
 
 
-rf <- train(formula, data = train, method = 'rf', metric = 'twoClassSummary', tuneLength = 15, trControl = control)
+rf <- train(formula, data = train, method = 'ranger', metric = 'ROC', tuneLength = 15, trControl = control)
 
 rf
 ```
