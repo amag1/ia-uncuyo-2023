@@ -145,21 +145,21 @@ Otra prueba agregando crossvalidation
 ```{r}
 ctrl <- trainControl(method = "cv", number = 10)
 data_cat <- filtered_data %>% dplyr::mutate(circ_tronco_cm_cat = sapply(circ_tronco_cm, categorize_circ))
-formula <- formula(inclinacion_peligrosa ~ circ_tronco_cm_cat + lat + seccion + diametro_tronco  + altura)
-
-data_cat$inclinacion_peligrosa <- as.factor(data_cat$inclinacion_peligrosa)
+formula <- formula(inclinacion_peligrosa ~ .)
+datas <- data %>% select(., id, ultima_modificacion, diametro_tronco, circ_tronco_cm, altura, lat, inclinacion_peligrosa)
 cmodel <- train(
   formula,
   data = data_cat,
   trControl = ctrl,
-  method = "ranger"
+  method = "ranger",
 )
 
-test2 <- test %>% dplyr::mutate(circ_tronco_cm_cat = sapply(circ_tronco_cm, categorize_circ))
-p <- predict(cmodel, test2)
+p <- predict(cmodel, test)
 
-r <- create_submission(p, test, "09_cv_k10")
+df <- data.frame(ID = test$id, inclinacion_peligrosa = p)
+r <- write_csv(df, "./submissions/11_cv_k10_nonbinary.csv")
 ```
+
 ```{r}
 library(xgboost)
 
