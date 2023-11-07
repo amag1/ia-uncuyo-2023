@@ -1,0 +1,101 @@
+---
+title: "tp7-classificadores"
+author: "andres"
+date: "2023-10-09"
+output: html_document
+---
+
+```{r}
+  confusion_matrix_imp <- function(data, reference) {
+      unique_classes <- unique(c(data, reference))
+      cm <- matrix(0, nrow = length(unique_classes), ncol = length(unique_classes))
+      colnames(cm) <- unique_classes
+      rownames(cm) <- unique_classes
+      
+      for (i in 1:length(data)){
+        actual_class <- reference[i]
+        predicted_class <- data[i]
+        cm[predicted_class, actual_class] = cm[ predicted_class, actual_class] + 1
+      }
+      
+      colnames(cm) <- paste("Actual:", colnames(cm))
+      rownames(cm) <- paste("Predicted:", rownames(cm))
+      
+      return(cm)
+  }
+
+  get_metrics <- function(confusion_matrix) {
+    accuracy <- (confusion_matrix[1,1] + confusion_matrix[2,2])/sum(confusion_matrix)
+    sensitivity <- confusion_matrix[1,1] / (confusion_matrix[1,1] + confusion_matrix[1,2])
+    specificity <- confusion_matrix[2,2] / (confusion_matrix[2,1] + confusion_matrix[2,2])
+    precision <- confusion_matrix[1,1] / (confusion_matrix[1,1] + confusion_matrix[2,1])
+    
+    print(sensitivity)
+    
+    metrics <- data.frame(
+      Accuracy = accuracy,
+      Precision = precision,
+      Sensitivity = sensitivity,
+      Specificity = specificity
+    )
+    
+    return(metrics)
+    
+  }
+```
+Clasificador aleatorio.
+Cargamos el archivo de validacion para probarlo
+```{r}
+library(readr)
+library(dplyr)
+data <- read_csv("./data/arbolado-mendoza-dataset-validation.csv")
+df_random <- data %>% mutate(random = runif(n(), min = 0, max = 1))
+
+random_classifier <- function(df){
+  df <- df %>% mutate(prediction_class = ifelse(random > 0.5, 1, 0))
+}
+
+df_random <- df_random %>% random_classifier()
+```
+
+```{r}
+library(caret)
+rdata <- df_random
+
+rdata$inclinacion_peligrosa <- factor(rdata$inclinacion_peligrosa, levels = c(0, 1))
+rdata$prediction_class <- factor(rdata$prediction_class, levels = c(0, 1))
+
+cm2 <- confusion_matrix_imp(data = rdata$prediction_class, reference = rdata$inclinacion_peligrosa)
+metrics <- get_metrics(cm2)
+cm2
+metrics
+```
+Podemos ver que, como es de esperar, la efectividad de nuestro modelo es muy cercana al 50%
+
+Ahora, repetimos el proceso sobre el mismo dataset pero con un clasificador de clase mayoritaria
+```{r}
+biggerclass_classifier <- function(df){
+  #get the majority class
+  class_counts <- table(df$inclinacion_peligrosa)
+  
+  majority_class <- names(class_counts)[which.max(class_counts)]
+  
+  return(majority_class)
+}
+
+#apply majority class to everyone
+df_maj <- data %>% mutate(prediction = biggerclass_classifier(.))
+
+#show confusion matrix
+df_maj$inclinacion_peligrosa <- factor(df_maj$inclinacion_peligrosa, levels = c(0,1))
+df_maj$prediction <- factor(df_maj$prediction, levels = c(0,1))
+
+cm <- confusion_matrix_imp(data = df_maj$prediction, reference = df_maj$inclinacion_peligrosa)
+cm
+get_metrics(cm)
+```
+```{r}
+metrics <- get_metrics(cm)
+metrics
+```
+

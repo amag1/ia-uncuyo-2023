@@ -1,0 +1,238 @@
+---
+title: "tp7-challenge"
+author: "andres"
+output: html_notebook
+---
+Importar librerias
+```{r}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(caret)
+library(rpart)
+
+confusion_matrix_imp <- function(data, reference) {
+    unique_classes <- unique(c(data, reference))
+    cm <- matrix(0, nrow = length(unique_classes), ncol = length(unique_classes))
+    colnames(cm) <- unique_classes
+    rownames(cm) <- unique_classes
+    
+    for (i in 1:length(data)){
+      actual_class <- reference[i]
+      predicted_class <- data[i]
+      cm[predicted_class, actual_class] = cm[ predicted_class, actual_class] + 1
+    }
+    
+    colnames(cm) <- paste("Actual:", colnames(cm))
+    rownames(cm) <- paste("Predicted:", rownames(cm))
+    
+    return(cm)
+}
+
+get_metrics <- function(confusion_matrix) {
+  accuracy <- (confusion_matrix[1,1] + confusion_matrix[2,2])/sum(confusion_matrix)
+  sensitivity <- confusion_matrix[1,1] / (confusion_matrix[1,1] + confusion_matrix[1,2])
+  specificity <- confusion_matrix[2,2] / (confusion_matrix[2,1] + confusion_matrix[2,2])
+  precision <- confusion_matrix[1,1] / (confusion_matrix[1,1] + confusion_matrix[2,1])
+  
+  print(sensitivity)
+  
+  metrics <- data.frame(
+    Accuracy = accuracy,
+    Precision = precision,
+    Sensitivity = sensitivity,
+    Specificity = specificity
+  )
+  
+  return(metrics)
+  
+}
+```
+Funcion para crear un envio
+```{r}
+create_submission <- function(prediction, test, fileName){
+  
+  result <- data.frame(
+    id = numeric(),
+    inclinacion_peligrosa = numeric()
+  )
+  
+  
+  for (i in 1:length(prediction)){
+    row <- data.frame(id = test[i,]$id, inclinacion_peligrosa = as.integer(prediction[i])-1)
+    result <- rbind(result,row)
+  }
+  
+  r <- readr::write_csv(result, fileName)
+}
+```
+Leer el dataset (version con una variable categorica nueva)
+```{r}
+data <- readr::read_csv("../data/arbolado-mendoza-dataset-circ_tronco_cm-train.csv")
+```
+Limpiar variables innecesarias
+```{r}
+filter_data <- dplyr::select(data, especie, altura, diametro_tronco, seccion, circ_tronco_cm_cat, inclinacion_peligrosa)
+```
+Comenzamos a entrenar modelos
+```{r}
+basetree <- rpart(inclinacion_peligrosa ~., data = filter_data, method="class")
+```
+Importar el dataset de validacion
+```{r}
+val <- readr::read_csv("../data/arbolado-mendoza-dataset-validation.csv")
+```
+Le agregamos una variable categorica
+```{r}
+categorize_circ <- function(value){
+  if (value < 80){
+    return("bajo")
+  }
+  else if (value < 190){
+    return("medio")
+  }
+  else if (value < 250){
+    return("alto")
+  }
+  else {
+    return("muy alto")
+  }
+}
+
+val <- val %>% dplyr::mutate(circ_tronco_cm_cat = sapply(circ_tronco_cm, categorize_circ))
+```
+
+Predecir
+```{r}
+p <- predict(basetree, val, type="class")
+ref <- as.factor(val$inclinacion_peligrosa)
+dat <- as.factor(p)
+cm <- confusion_matrix_imp(data = dat, reference = ref)
+metrics <- get_metrics(cm)
+```
+Escribir los resultados en un csv
+```{r}
+# metrics <- metrics %>% mutate(Description = "Naive model")
+# 
+# w <- readr::write_csv(metrics, "./model_results.csv")
+```
+Como la enorme mayoria de los arboles no son peligrosos, tomamos una muestra del dataset de training para que la distribucion sea mas pareja
+```{r}
+data <- readr::read_csv("../data/arbolado-mendoza-dataset-circ_tronco_cm-train.csv")
+dangerous <- data %>% dplyr::filter(., inclinacion_peligrosa == 1)
+total_dangerous <- dangerous %>% dplyr::count() 
+
+normal <- data %>% dplyr::filter(., inclinacion_peligrosa == 0) %>% dplyr::slice(., 1:total_dangerous$n)
+```
+Unificamos y mezclamos los dos datasets
+```{r}
+new_train <- rbind(dangerous, normal)
+
+new_train <- new_train[sample(1:nrow(new_train)), ] %>% select(.,id,especie,altura, diametro_tronco, seccion, circ_tronco_cm_cat, inclinacion_peligrosa)
+```
+Entrenar un nuevo modelo
+```{r}
+test <- readr::read_csv("./../data/arbolado-mza-dataset-test.csv") %>% dplyr::mutate(circ_tronco_cm_cat = sapply(circ_tronco_cm, categorize_circ))
+
+tree <- rpart(inclinacion_peligrosa ~., data = new_train, method="class")
+
+p <- predict(tree, test, type="class")
+# ref <- as.factor(val$inclinacion_peligrosa)
+# dat <- as.factor(p)
+# cm <- confusion_matrix_imp(data = dat, reference = ref)
+# metrics <- get_metrics(cm) %>% dplyr::mutate(Description = "Downsample majority class")
+# w <- readr::write_csv(metrics, "./model_results.csv", append = TRUE)
+```
+Prueba con los datos originales usando un algoritmo de boosting
+```{r}
+library(xgboost)
+filter_data <- new_train
+val <- readr::read_csv("../data/arbolado-mendoza-dataset-validation.csv")
+val <- val %>% dplyr::mutate(circ_tronco_cm_cat = sapply(circ_tronco_cm, categorize_circ))
+
+filter_data$especie = as.numeric(as.factor(filter_data$especie))
+filter_data$altura = as.numeric(as.factor(filter_data$altura))
+filter_data$diametro_tronco = as.numeric(as.factor(filter_data$diametro_tronco))
+filter_data$circ_tronco_cm_cat = as.numeric(as.factor(filter_data$circ_tronco_cm_cat))
+
+val <- val %>% dplyr::select(., id,especie, altura, diametro_tronco, seccion, circ_tronco_cm_cat, inclinacion_peligrosa)
+
+val$especie = as.numeric(as.factor(val$especie))
+val$altura = as.numeric(as.factor(val$altura))
+val$diametro_tronco = as.numeric(as.factor(val$diametro_tronco))
+val$circ_tronco_cm_cat = as.numeric(as.factor(val$circ_tronco_cm_cat))
+
+dtrain <- xgb.DMatrix(data = as.matrix(filter_data[, -6]), label = as.numeric(filter_data$inclinacion_peligrosa))
+
+dval <- xgb.DMatrix(data = as.matrix(val[, -6]), label = as.numeric(val$inclinacion_peligrosa))
+
+# Define XGBoost parameters
+params <- list(
+  objective = "binary:logistic",  # for binary classification
+  eval_metric = "error"
+  
+  # you can choose an appropriate evaluation metric
+)
+
+# Train the XGBoost model
+xgb_model <- xgboost(params = params, data = dtrain, nround = 100, verbose = 0,  nthread = 4)
+
+test <- readr::read_csv("./../data/arbolado-mza-dataset-test.csv") %>% dplyr::mutate(circ_tronco_cm_cat = sapply(circ_tronco_cm, categorize_circ)) %>% select(., id,especie,altura, diametro_tronco, seccion, circ_tronco_cm_cat)
+test$especie = as.numeric(as.factor(test$especie))
+test$altura = as.numeric(as.factor(test$altura))
+test$diametro_tronco = as.numeric(as.factor(test$diametro_tronco))
+test$circ_tronco_cm_cat = as.numeric(as.factor(test$circ_tronco_cm_cat))
+# Create a DMatrix for the test data without the 'inclinacion_peligrosa' column
+dtest <- xgb.DMatrix(data = as.matrix(test))
+colnames(dtest) <- NULL
+# Make predictions using the trained XGBoost model
+xgb_predictions <- predict(xgb_model, dtest)
+
+# Convert predictions to binary labels if needed
+xgb_predictions_binary <- as.factor(ifelse(xgb_predictions > 0.5, 1, 0))
+create_submission(prediction = xgb_predictions_binary, test = test, fileName = "./model3_submission.csv")
+
+cm <- confusion_matrix_imp(data = xgb_predictions_binary, reference = as.factor(val$inclinacion_peligrosa))
+
+w <- readr::write_csv(metrics, "./model_results.csv", append = TRUE)
+```
+Probamos con oversampling   
+```{r}
+library(imbalance)
+library(dplyr)
+
+data <- readr::read_csv("../data/arbolado-mendoza-dataset-circ_tronco_cm-train.csv") %>%
+  dplyr::select(., especie, altura, diametro_tronco, seccion, circ_tronco_cm_cat, inclinacion_peligrosa)
+
+f <- data %>% filter(., inclinacion_peligrosa == 0) %>% count()
+
+val <- readr::read_csv("../data/arbolado-mendoza-dataset-validation.csv")
+val <- val %>% dplyr::mutate(circ_tronco_cm_cat = sapply(circ_tronco_cm, categorize_circ))
+
+#Factorizar todas las columnas de ambos datasets
+data$especie = as.numeric(as.factor(data$especie))
+data$altura = as.numeric(as.factor(data$altura))
+data$diametro_tronco = as.numeric(as.factor(data$diametro_tronco))
+data$seccion = as.numeric(as.factor(data$seccion))
+data$circ_tronco_cm_cat = as.numeric(as.factor(data$circ_tronco_cm_cat))
+data$inclinacion_peligrosa = as.factor(data$inclinacion_peligrosa)
+
+
+set.seed(123)
+n <- 100
+dataf <- data.frame(
+  Class = sample(0:1, n, replace = TRUE),
+  NumericVar = rnorm(n),
+  CategoricalVar = sample(letters[1:3], n, replace = TRUE),
+  FactorVar = as.factor(sample(1:2, n, replace = TRUE))
+)
+
+dataf <- dataf %>%
+  select(Class, NumericVar)
+
+imbalanceRatio(dataf)
+data_balanced_over <- oversample(dataf, method = "wRACOG", classAttr = "Class")
+# data_balanced_over <- oversample(data, method = "SMMOTE", classAttr = "inclinacion_peligrosa")
+```
+
+

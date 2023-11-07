@@ -1,0 +1,149 @@
+---
+title: "tp7-cv"
+author: "andres"
+date: "2023-10-09"
+output: html_document
+---
+Funcion para calcular una matriz de confusion dada una columna de predicciones y otra con los verdaderos valores
+```{r}
+  confusion_matrix_imp <- function(data, reference) {
+      unique_classes <- unique(c(data, reference))
+      cm <- matrix(0, nrow = length(unique_classes), ncol = length(unique_classes))
+      colnames(cm) <- unique_classes
+      rownames(cm) <- unique_classes
+      
+      for (i in 1:length(data)){
+        actual_class <- reference[i]
+        predicted_class <- data[i]
+        cm[predicted_class, actual_class] = cm[ predicted_class, actual_class] + 1
+      }
+      
+      colnames(cm) <- paste("Actual:", colnames(cm))
+      rownames(cm) <- paste("Predicted:", rownames(cm))
+      
+      return(cm)
+  }
+
+  get_metrics <- function(confusion_matrix) {
+    accuracy <- (confusion_matrix[1,1] + confusion_matrix[2,2])/sum(confusion_matrix)
+    sensitivity <- confusion_matrix[1,1] / (confusion_matrix[1,1] + confusion_matrix[1,2])
+    specificity <- confusion_matrix[2,2] / (confusion_matrix[2,1] + confusion_matrix[2,2])
+    precision <- confusion_matrix[1,1] / (confusion_matrix[1,1] + confusion_matrix[2,1])
+    
+    print(sensitivity)
+    
+    metrics <- data.frame(
+      Accuracy = accuracy,
+      Precision = precision,
+      Sensitivity = sensitivity,
+      Specificity = specificity
+    )
+    
+    return(metrics)
+    
+  }
+```
+Funcion para k-fold cross validation
+```{r}
+library(readr)
+data <- read_csv("./data/arbolado-mendoza-dataset-validation.csv")
+data
+create_folds <- function(df, k){
+  shuffled_data= df[sample(1:nrow(df)), ] 
+  
+   # Calculate the number of rows in each fold
+  fold_size <- nrow(shuffled_data) %/% k
+  fold_sizes <- rep(fold_size, k)
+  
+  # Distribute the remaining rows if any
+  remaining_rows <- nrow(shuffled_data) %% k
+  fold_sizes[1:remaining_rows] <- fold_sizes[1:remaining_rows] + 1
+  
+  # Split the shuffled dataframe into k folds
+  folds <- split(shuffled_data, rep(1:k, fold_sizes))
+  
+  # Convert the folds to a list
+  fold_list <- as.list(folds)
+
+  return(fold_list)
+}
+
+foldeddata <- create_folds(data, 10)
+print(foldeddata)
+```
+Test de rpart
+```{r}
+library(rpart)
+library(dplyr)
+library(caret)
+df_train <- data %>% dplyr::sample_frac(0.80)
+df_validation <- dplyr::anti_join(data, df_train, by = 'id')
+
+df_train$inclinacion_peligrosa = as.factor(df_train$inclinacion_peligrosa)
+df_validation$inclinacion_peligrosa = as.factor(df_validation$inclinacion_peligrosa)
+train_formula<-formula(inclinacion_peligrosa~altura+diametro_tronco)
+
+
+# generamos el modelo 
+tree_model<-rpart(train_formula,data=df_train)
+# obtenemos la predicción
+p <- predict(tree_model, df_validation, type="class")
+
+# Apply a threshold to make binary predictions (0 or 1)
+
+# Now 'binary_predictions' contains the binary predictions (0 or 1)
+
+true_labels <- df_validation$inclinacion_peligrosa
+cm <- confusionMatrix(data = binary_predictions, reference = true_labels)
+```
+Ahora, creamos una funcion para cross validation
+```{r}
+cross_validation <- function(df, k, tformula) {
+  folded_data <- create_folds(df, k)
+  
+  result <- data.frame(
+      Accuracy = numeric(),
+      Precision = numeric(),
+      Sensitivity = numeric(),
+      Specificity = numeric()
+    )
+  for (i in 1:length(folded_data)) {
+    validation_set <- folded_data[[i]]
+    trainings_sets <- folded_data[-i]
+    
+    training_df <- do.call(rbind, trainings_sets)
+    
+    tree_model <- rpart(tformula, data = training_df)
+    p <- predict(tree_model, validation_set, type="class")
+    
+    true_labels <- validation_set$inclinacion_peligrosa
+    crow <- confusion_matrix_imp(data = p, reference = true_labels) %>% get_metrics()
+    result[nrow(result) + 1, ] <- crow
+  }
+  
+  return(result)
+}
+
+get_stats <- function(df) {
+  
+  meanRow <- colMeans(df)
+  sdRow <- apply(df, 2, sd)
+  
+  df <- rbind(df, meanRow)
+  result <- rbind(df, sdRow)
+  return(result)
+}
+```
+Testeamos la funcion creada
+```{r}
+library(readr)
+data <- read_csv("./data/arbolado-mendoza-dataset-validation.csv")
+data$inclinacion_peligrosa = as.factor(data$inclinacion_peligrosa)
+
+train_formula<-formula(inclinacion_peligrosa~altura+diametro_tronco)
+
+result_df <- cross_validation(data, 10, train_formula)
+
+metrics <- get_stats(result_df)
+metrics
+```

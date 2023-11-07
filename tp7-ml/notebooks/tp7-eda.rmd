@@ -1,0 +1,117 @@
+---
+title: "tp7-eda"
+author: "andres"
+date: "2023-10-08"
+output: html_document
+---
+Importar readr para poder leer el csv
+
+```{r}
+library(tidyr)
+library(readr)
+df <- readr::read_csv("./data/arbolado-mza-dataset.csv")
+```
+
+Dividir el dataset en train y validation
+
+```{r}
+library(dplyr)
+df_train <- df %>% dplyr::sample_frac(0.80)
+df_validation <- dplyr::anti_join(df, df_train, by = 'id')
+
+df_train
+```
+Guardar cada parte en su propio csv
+```{r}
+readr::write_csv(df_train, "./data/arbolado-mendoza-dataset-train.csv")
+readr::write_csv(df_validation, "./data/arbolado-mendoza-dataset-validation.csv")
+```
+Explorar el dataframe de test
+```{r}
+library(ggplot2)
+
+ggplot(df_train, aes(x = factor(inclinacion_peligrosa))) +
+  geom_bar() +
+  labs(title = "Histograma de frecuencia",
+       x = "Inclinacion peligrosa",
+       y = "Frecuencia")
+
+ggsave("./plots/distribucion_inclinacion_peligrosa.png")
+```
+Ahora, repetimos el mismo proceso para cada seccion
+```{r}
+ggplot(df_train, aes(x = factor(inclinacion_peligrosa))) +
+  geom_bar() +
+  labs(title = "Histograma de frecuencia",
+       x = "Inclinacion peligrosa",
+       y = "Frecuencia") +
+  facet_wrap(~ seccion)
+
+ggsave("./plots/distribucion_inclinacion_peligrosa_seccion.png")
+```
+Y podemos apreciar que no se observan diferencias significativas en la distribucion de la peligrosidad de los arboles segun la seccion, aunque la cantidad de observaciones por seccion si es muy diferente.
+
+Ahora, analizamos la peligrosidad por especie:
+```{r}
+ggplot(df_train, aes(x = factor(inclinacion_peligrosa))) +
+  geom_bar() +
+  labs(title = "Histograma de frecuencia",
+       x = "Inclinacion peligrosa",
+       y = "Frecuencia") +
+  facet_wrap(~ especie)
+
+ggsave("./plots/distribucion_inclinacion_peligrosa_especies.png", height = 10)
+```
+Ahora, creamos un histograma de frecuencia para la variable ```circ_tronco_cm```
+```{r}
+binw <- 10
+ggplot(df_train, aes(x = circ_tronco_cm)) +
+  geom_histogram(binwidth = binw, fill = "skyblue", color = "black") +
+  labs(
+    title = "Histogram of Trunk Circumference (bins of width 10)",
+    x = "Trunk Circumference (cm)",
+    y = "Frequency"
+  ) 
+
+ggsave("./plots/trunk_circ_histogram.png")
+```
+Repetimos el proceso, separando segun la inclinacion peligrosa
+```{r}
+library(tidyr)
+ggplot(df_train, aes(x = circ_tronco_cm, fill = factor(inclinacion_peligrosa),)) +
+  geom_histogram(binwidth = binw, alpha = 0.5, position = "identity") +
+  labs(
+    title = "Histogram of Trunk Circumference",
+    x = "Trunk Circumference (cm)",
+    y = "Frequency",
+    fill = "Inclinación peligrosa"
+  ) +  
+  scale_fill_manual(values = c("0" = "blue", "1" = "red"))
+
+ggsave("./plots/trunk_circ_perclass.png")
+```
+Analizando este histograma, podemos observar una pequeña diferencia en la distribución de ambas variables: aquellos árboles cuya circunferencia es menor a unos ~90cm por lo general no tienen una inclinación peligrosa
+
+Ahora, creamos una nueva variable categórica
+```{r}
+categorize_circ <- function(value){
+  if (value < 80){
+    return("bajo")
+  }
+  else if (value < 190){
+    return("medio")
+  }
+  else if (value < 250){
+    return("alto")
+  }
+  else {
+    return("muy alto")
+  }
+}
+
+df_train <- df_train %>% dplyr::mutate(circ_tronco_cm_cat = sapply(circ_tronco_cm, categorize_circ))
+```
+Guardamos el dataframe nuevo en un archivo diferente
+```{r}
+readr::write_csv(df_train, "./data/arbolado-mendoza-dataset-circ_tronco_cm-train.csv")
+
