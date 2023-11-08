@@ -39,6 +39,8 @@ def information_gain(examples, attribute):
 
 
 def learn_tree(examples, attributes, parent_examples, previous_attribute):
+    print(examples)
+    print("--------")
     if examples.empty:
         return Node(label=previous_attribute, value=plurality_value(parent_examples))
     elif examples["play"].nunique() == 1:
