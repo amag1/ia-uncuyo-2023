@@ -3,7 +3,8 @@
 ## Parte C: Árboles de decisión
 
 ### Resultados sobre tennis.csv
-<!-- foto del árbol -->
+
+![tree](images/tree.drawio.png)
 
 ### Arboles de decisión para datos de tipo real
 
