@@ -1,12 +1,10 @@
 ## IA 1 - 2023
 
----
 
 # Informe Final
 
 ## Inclinación del Arbolado Público - Mendoza
 
----
 
 ### Integrantes
 
@@ -31,7 +29,41 @@ Para este proyecto, se utilizó dicho dataset para participar en un desafío de 
 
 ## Marco Teórico
 
-Puesto que el problema con el que nos encontramos es un problema de clasificación, debemos conocer algunos de los algoritmos que nos permiten resolver este tipo de problemas. A pesar de que existen incontables modelos para resolver problemas de clasificación, en este proyecto se utilizaron los siguientes:
+Puesto que el problema con el que nos encontramos es un problema de clasificación (en particular, un problema de clasificación binaria), debemos conocer algunos de los algoritmos que nos permiten resolver este tipo de problemas. 
+
+Antes de comenzar a estudiar qué modelo es el apropiado para este problema, es importante analizar el dataset con el que contamos. En este caso, el dataset cuenta con 11 variables:
+
+
+
+    id: int
+
+    especie: string
+
+    ultima_modificacion: date
+
+    altura: string
+
+    circ_tronco_cm: int
+
+    diametro_tronco: string
+
+    long: float
+
+    lat: float
+
+    seccion: int
+
+    nombre_seccion: string
+
+    area_seccion: float
+
+Y también cuenta con una variable categórica que es la que se busca predecir:
+
+    inclinacion_peligrosa: int
+
+---
+
+Una vez tenidos en cuenta los datos, podemos seleccionar un algoritmo de machine learning que nos permite resolver nuestro problema. A pesar de que existen incontables modelos para resolver problemas de clasificación, en este proyecto se utilizaron los siguientes:
 
 ### Árboles de decisión
 
@@ -47,7 +79,7 @@ Además de los algoritmos, es sumamente importante conocer nuestro conjunto de d
 
 El dataset del árbolado público es un dataset sumamente desbalanceado, con solo un 12% de la población perteneciente a la clase de inclinación peligrosa.
 
-<!-- foto de las clases -->
+![imbalance](plots/imbalance.png)
 
 Es por esto que una de nuestras tareas más importantes fue lidiar con el desbalance de clases. Para cumplir con este requisito, se utilizaron distintas técnicas entre las cuales encontramos el oversampling, el undersampling y el SMOTE.
 
@@ -57,7 +89,27 @@ Es por esto que una de nuestras tareas más importantes fue lidiar con el desbal
 
 Como punto de partida para comenzar con la predicción, debemos comenzar conociendo nuestro conjunto de datos. En este análisis exploratorio nos cojncentramos en entender cómo se distribuyen nuestros datos, hallar qué variables son importantes y cuáles pueden ser omitidas
 
-<!-- histogramas -->
+Para comenzar, se realizaron diferentes histogramas de frecuencia para intentar detectar cuáles variables tenían una correlación positiva con la inclinación peligrosa
+
+En primera instancia, se llevó a cabo el histograma dividiendo los datos por sección, y a simple vista se ve que todas las secciónes tienen aproximadamente la misma cantidad de árboles peligrosos.
+![histograma1](plots/distribucion_inclinacion_peligrosa_seccion.png)
+
+De todos modos, al analizar el porcentaje de árboles peligrosos por sección, podemos ver que existen tres tipos de secciones: algunas tienen aproximadamente 13% de árboles peligrosos, otras tienen alrededor de un 8%, mientras que otras no tienen ningún árbol con inclinación peligrosa.
+
+![comparacion](plots/dangerous-by-section.png)
+![comparacion-scaled](plots/dangerous-by-section-scaled.png)
+
+
+También se analizó la distribución de árboles peligrosos por especie.
+
+![histograma2](plots/distribucion_inclinacion_peligrosa_especies.png)
+
+A simple vista, podemos ver que la especie _Morera_ no solo tiene muchísimas más entradas, sino que también posee muchas entradas con inclinación peligrosa.
+
+![Morera](image.png)
+
+Podemos observar que el 18% de las Moreras tienen inclinación peligrosa, un número considerablemente superior al de las otras especies.
+
 <!-- matriz de dependencias -->
 
 ### Preprocesamiento de datos

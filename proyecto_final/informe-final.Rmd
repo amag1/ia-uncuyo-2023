@@ -1,0 +1,64 @@
+---
+title: "informe-final"
+author: "andres"
+date: "2023-11-15"
+output: html_document
+---
+```{r}
+library(readr)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+
+data <- readr::read_csv('data/arbolado-mza-dataset.csv')
+n <- dplyr::count(data, inclinacion_peligrosa)
+
+imbalance <- n$n[2]/n$n[1]
+imbalance
+title <- "Desbalance de clases = "
+title <- paste(c(title, imbalance), collapse = " ")
+# Plot class imbalance
+p <- ggplot(data, aes(x = factor(inclinacion_peligrosa), fill = factor(inclinacion_peligrosa))) +
+  geom_bar() +
+  labs(title = title,
+       x = "inclinacion_peligrosa",
+       y = "Cantidad de entradas") +
+  scale_x_discrete(labels = c("0" = "No", "1" = "Si")) +
+  scale_fill_manual(values = c("0" = "blue", "1" = "red"))
+
+ggsave("plots/imbalance.png", plot = p, width = 6, height = 4)
+```
+
+```{r}
+percentage_data <- data %>%
+  group_by(seccion) %>%
+  summarise(percentage = mean(inclinacion_peligrosa == 1) * 100)
+
+p <- ggplot(percentage_data, aes(x = seccion, y = percentage)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Porcentaje de árboles peligrosos por sección",
+       x = "Sección",
+       y = "Porcentaje") 
+
+ggsave('plots/dangerous-by-section.png', p, height = 5, width = 7)
+```
+Do the same and scale the y-axis
+```{r}
+percentage_data <- data %>%
+  group_by(seccion) %>%
+  summarise(percentage = mean(inclinacion_peligrosa == 1) * 100)
+
+pScaled <- ggplot(percentage_data, aes(x = seccion, y = percentage)) +
+  geom_col(stat = "identity") +
+  geom_text(aes(label = sprintf("%.1f%%", percentage)),
+            position = position_stack(vjust = 0.5),
+            color = "black", size = 3) +
+  labs(title = "Porcentaje de árboles peligrosos por sección",
+       x = "Sección",
+       y = "Porcentaje") +
+  scale_y_continuous(limits = c(0, 100))
+
+ggsave('plots/dangerous-by-section-scaled.png', pScaled, height = 5, width = 7)
+```
+
+
