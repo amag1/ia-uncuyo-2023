@@ -10,7 +10,7 @@
 
 - Maglione, Andrés
 - Silva, Yeumen
-
+|
 ---
 
 ## Introducción
